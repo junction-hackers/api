@@ -14,6 +14,11 @@ class ApiController < ApplicationController
 
 	def input_victim
 		begin
+			info = {
+				location: params[:address],
+				phone: params[:phoneNumber],
+				pic: params[:photoKey]
+			}				
 			res = Victim.new
 			res.save_record(params)
 
@@ -25,6 +30,12 @@ class ApiController < ApplicationController
 
 	def input_searcher
 		begin
+			info = {
+				location: params[:address],
+				phone: params[:phoneNumber],
+				pic: params[:photoKey]
+			}	
+			
 			res = Searcher.new
 			res.save_record(params)
 
@@ -68,7 +79,7 @@ class ApiController < ApplicationController
 						consent.save_record(consent_params)
 
 						url = "#{DOMAIN}/api/consent/#{searcher_id}/#{v_data[:victim_id]}"
-						msg = "Woof! Trakr here! Our system found a match to the missing person you registered. You can give consent to information by tapping the following link: #{url} "
+						msg = "Woof! Trakr here! Our system found a match to the missing person you registered. You can give consent to information by tapping the following link: \n#{url} "
 						send_sms(v.phone, msg)
 					end
 				end
@@ -91,7 +102,9 @@ class ApiController < ApplicationController
 		age = nil
 
 		msg = "Woof! Trakr at your service! \nWe got a consent from the reporter. \nHere are the information of the possible match.\n"
-		msg += ""
+		msg += "Location: #{victim_info[:location]}\n"
+		msg += "Age: #{victim_info[:age]}\n" if victim_info[:age].present?
+		msg += "Gender: #{victim_info[:gender]}\n" if victim_info[:gender].present?
 		send_sms(searcher["phone"], msg)
 
 	end
