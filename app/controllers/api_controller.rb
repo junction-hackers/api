@@ -3,7 +3,7 @@ require 'unirest'
 require 'cgi'
 
 class ApiController < ApplicationController
-	DOMAIN = "http://localhost:3005"
+	DOMAIN = "http://ec2-54-250-245-163.ap-northeast-1.compute.amazonaws.com:3005"
 
 	def generate_id
 		v_count = Victim.select("id").where(done: 0).order("id desc").first
