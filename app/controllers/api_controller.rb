@@ -35,7 +35,6 @@ class ApiController < ApplicationController
 	end
 
 	def victims
-		#send_sms("817038536995", "hi")
 		results = Victim.where(done: 0)
 		render json: results
 	end
