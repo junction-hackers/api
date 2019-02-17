@@ -35,7 +35,7 @@ class ApiController < ApplicationController
 				phone: params[:phoneNumber],
 				pic: params[:photoKey]
 			}	
-			
+
 			res = Searcher.new
 			res.save_record(params)
 
@@ -79,7 +79,7 @@ class ApiController < ApplicationController
 						consent.save_record(consent_params)
 
 						url = "#{DOMAIN}/api/consent/#{searcher_id}/#{v_data[:victim_id]}"
-						msg = "Woof! Trakr here! Our system found a match to the missing person you registered. You can give consent to information by tapping the following link: \n#{url} "
+						msg = "Woof! Trakr here! We found a match to the missing person. Please consent by tapping here: \n#{url} "
 						send_sms(v.phone, msg)
 					end
 				end
