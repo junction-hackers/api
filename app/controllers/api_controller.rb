@@ -35,7 +35,7 @@ class ApiController < ApplicationController
 	end
 
 	def victims
-		send_sms("817038536995", "hi")
+		#send_sms("817038536995", "hi")
 		results = Victim.where(done: 0)
 		render json: results
 	end
@@ -49,23 +49,17 @@ class ApiController < ApplicationController
 		all_data = params
 
 		begin
-			all_data.each do | data |
-				logger.debug "--- 0 ---"
-				logger.debug data
-				logger.debug data["searcher"]
-
+			all_data["_json"].each do | data |
 				searcher_id = data["searcher"]
 				searcher = Searcher.find(searcher_id)
 				if searcher_id.present?
 					#send nexmo text message to searchers
 					msg = "Woof! It's Trakr! I found leads who might be your missing person. Release of details would follow after the reporter's consent. Please stand by, I'm with you!"
-					send_sms(searcher.phone, msg)
-
-					logger.debug "----1----"
-					logger.debug msg
+					send_sms(searcher["phone"], msg)
 
 					#send nexmo text message to related victims
 					data["matches"].each do | v_data |
+						v = Victim.find(v_data[:victim_id])
 						consent = Consent.new
 						consent_params = {
 							:searcher_id	=> searcher_id,
@@ -74,21 +68,16 @@ class ApiController < ApplicationController
 						}
 						consent.save_record(consent_params)
 
-						logger.debug "----2----"
-						logger.debug consent_params
-
 						url = "#{DOMAIN}/api/consent/#{searcher_id}/#{v_data[:victim_id]}"
 						msg = "Woof! Trakr here! Our system found a match to the missing person you registered. You can give consent to information by tapping the following link: #{url} "
-						send_sms(searcher.phone, msg)
+						send_sms(v.phone, msg)
 					end
 				end
 			end
 			render json: {status: "200", message: "Success"}
 		rescue => e
 			render :json => { :errors => e.message }
-		end
-
-		
+		end		
 	end
 
 	def consent
@@ -104,7 +93,7 @@ class ApiController < ApplicationController
 
 		msg = "Woof! Trakr at your service! \nWe got a consent from the reporter. \nHere are the information of the possible match.\n"
 		msg += ""
-		send_sms(searcher.phone, msg)
+		send_sms(searcher["phone"], msg)
 
 	end
 

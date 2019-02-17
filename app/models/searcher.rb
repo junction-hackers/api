@@ -18,13 +18,13 @@ class Searcher < ActiveRecord::Base
 
   def set_create_time 
     t = set_time
-    self.created_at = t
-    self.updated_at = t
+    self.create_time = t
+    self.update_time = t
   end
 
   def set_update_time 
     t = set_time
-    self.updated_at = t
+    self.update_time = t
   end
 
   def set_time
