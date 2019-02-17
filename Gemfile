@@ -65,3 +65,5 @@ gem 'cloudinary'
 
 #gem 'rapidapi', '~> 0.1.3'
 gem 'unirest', '1.1.2'
+
+gem 'bitly'

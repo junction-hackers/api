@@ -1,6 +1,7 @@
 #coding:utf-8
 require 'unirest'
 require 'cgi'
+require 'bitly'
 
 class ApiController < ApplicationController
 	DOMAIN = "http://ec2-54-250-245-163.ap-northeast-1.compute.amazonaws.com:3005"
@@ -14,13 +15,19 @@ class ApiController < ApplicationController
 
 	def input_victim
 		begin
+			# info = {
+			# 	location: params[:document][:address],
+			# 	phone: params[:document][:phoneNumber],
+			# 	pic: params[:document][:photoKey]
+			# }
+
 			info = {
-				location: params[:address],
-				phone: params[:phoneNumber],
-				pic: params[:photoKey]
-			}				
+				location: "California",
+				phone: "817038536995",
+				pic: "3.jpg"
+			}			
 			res = Victim.new
-			res.save_record(params)
+			res.save_record(info)
 
 			render json: {status: "200", message: "Success"}
 		rescue => e
@@ -30,14 +37,19 @@ class ApiController < ApplicationController
 
 	def input_searcher
 		begin
+			# info = {
+			# 	location: params[:document][:address],
+			# 	phone: params[:document][:phoneNumber],
+			# 	pic: params[:document][:photoKey]
+			# }
+
 			info = {
-				location: params[:address],
-				phone: params[:phoneNumber],
-				pic: params[:photoKey]
-			}	
+				phone: "818088872143",
+				pic: "5.jpg"
+			}
 
 			res = Searcher.new
-			res.save_record(params)
+			res.save_record(info)
 
 			render json: {status: "200", message: "Success"}
 		rescue => e
@@ -79,6 +91,8 @@ class ApiController < ApplicationController
 						consent.save_record(consent_params)
 
 						url = "#{DOMAIN}/api/consent/#{searcher_id}/#{v_data[:victim_id]}"
+						bitly = Bitly.new("msdk88", "b811611a231fd3150eef2e904704be2e97fd6075")
+						url = bitly.shorten(url)
 						msg = "Woof! Trakr here! We found a match to the missing person. Please consent by tapping here: \n#{url} "
 						send_sms(v.phone, msg)
 					end
@@ -98,13 +112,13 @@ class ApiController < ApplicationController
 		consent.save_record({consent: 1})
 
 		victim_info = Victim.find(victim_id)
-		gender = nil
-		age = nil
+		gender = "Male"
+		age = "60"
 
 		msg = "Woof! Trakr at your service! \nWe got a consent from the reporter. \nHere are the information of the possible match.\n"
 		msg += "Location: #{victim_info[:location]}\n"
-		msg += "Age: #{victim_info[:age]}\n" if victim_info[:age].present?
-		msg += "Gender: #{victim_info[:gender]}\n" if victim_info[:gender].present?
+		msg += "Age: #{victim_info[:age]}\n"
+		msg += "Gender: #{victim_info[:gender]}\n"
 		send_sms(searcher["phone"], msg)
 
 	end
